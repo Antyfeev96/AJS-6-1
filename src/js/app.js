@@ -1,41 +1,27 @@
-const sortFunc = (obj, [a, b]) => {
-  const startArr = Object.entries(obj);
-  const arr = [];
+/* eslint-disable max-len */
+/* eslint-disable one-var */
+export default function sortFunc(object, table) {
+  const arrayByTable = [],
+    arrayByName = [];
+
   // eslint-disable-next-line guard-for-in
-  for (const item in startArr) {
-    const objToSort = {
-      key: startArr[item][0],
-      value: startArr[item][1],
-    };
-    if (objToSort.key === a) {
-      arr[0] = objToSort;
-    }
-    if (objToSort.key === b) {
-      arr[1] = objToSort;
+  for (const prop in object) { // предполагается отсутствие перечисляемых свойств у прототипа, поэтому отдельной проверки нет
+    const keyValue = { key: prop, value: object[prop] },
+      index = table.indexOf(prop);
+
+    if (index !== -1) {
+      arrayByTable[index] = keyValue;
+    } else {
+      arrayByName.push(keyValue);
     }
   }
-  startArr.forEach((item) => {
-    if (item[0] === 'name' || item[0] === 'level') {
-      startArr.splice(startArr.indexOf(item), 1);
-    }
-  });
-  startArr.sort();
-  // eslint-disable-next-line guard-for-in
-  for (const item in startArr) {
-    const objToSort = {
-      key: startArr[item][0],
-      value: startArr[item][1],
-    };
-    arr.push(objToSort);
+
+  if (table.length !== arrayByTable.length) {
+    throw new Error('В таблице есть неверные свойства');
   }
-};
 
-sortFunc({
-  name: 'мечник',
-  health: 10,
-  level: 2,
-  attack: 80,
-  defence: 40,
-}, ['name', 'level']);
+  arrayByName.sort((a, b) => (a.key > b.key ? 1 : -1)); // 0, думаю, необязателен, т. к. одинаковых свойств быть не может
 
-export default sortFunc;
+  const concatedArray = arrayByTable.concat(arrayByName);
+  return concatedArray;
+}
